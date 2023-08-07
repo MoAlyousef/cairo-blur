@@ -1,0 +1,15 @@
+[package]
+name = "cairo-blur"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["MoAlyousef <mohammed.alyousef@neurosrg.com>"]
+description = "Apply a Gaussian blur to your Cairo image surface"
+repository = "https://github.com/MoAlyousef/cairo-blur"
+documentation = "https://docs.rs/cairo-blur"
+keywords = ["gui", "graphics"]
+categories = ["graphics"]
+readme = "README.md"
+
+[dependencies]
+cairo-rs = "0.18"
