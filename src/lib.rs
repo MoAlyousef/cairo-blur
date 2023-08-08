@@ -1,5 +1,8 @@
+#![doc = include_str!("../README.md")]
+
 use cairo::{Format, ImageSurface};
 
+/// Blur a cairo image surface
 pub fn blur_image_surface(surface: &mut ImageSurface, radius: i32) {
     let mut width = surface.width();
     let height = surface.height();
@@ -41,10 +44,9 @@ pub fn blur_image_surface(surface: &mut ImageSurface, radius: i32) {
 
                 // Horizontally blur from surface -> temp
                 for i in 0..height {
-                    let s: &[u32] =
-                        unsafe { std::mem::transmute(&src[(i * src_stride) as usize..]) };
+                    let s: &[u32] = unsafe { src[(i * src_stride) as usize..].align_to::<u32>().1 };
                     let d: &mut [u32] =
-                        unsafe { std::mem::transmute(&mut dst[(i * dst_stride) as usize..]) };
+                        unsafe { dst[(i * dst_stride) as usize..].align_to_mut::<u32>().1 };
                     for j in 0..width {
                         if radius < j && j < width - radius {
                             let j = j as usize;
@@ -76,9 +78,9 @@ pub fn blur_image_surface(surface: &mut ImageSurface, radius: i32) {
                 // Then vertically blur from tmp -> surface
                 for i in 0..height {
                     let mut s: &mut [u32] =
-                        unsafe { std::mem::transmute(&mut dst[(i * dst_stride) as usize..]) };
+                        unsafe { dst[(i * dst_stride) as usize..].align_to_mut::<u32>().1 };
                     let d: &mut [u32] =
-                        unsafe { std::mem::transmute(&mut src[(i * src_stride) as usize..]) };
+                        unsafe { src[(i * src_stride) as usize..].align_to_mut::<u32>().1 };
                     for j in 0..width {
                         if radius < i && i < height - radius {
                             let j = j as usize;
@@ -96,9 +98,9 @@ pub fn blur_image_surface(surface: &mut ImageSurface, radius: i32) {
                             }
 
                             s = unsafe {
-                                std::mem::transmute(
-                                    &mut dst[((i - half + k) * dst_stride) as usize..],
-                                )
+                                dst[((i - half + k) * dst_stride) as usize..]
+                                    .align_to_mut::<u32>()
+                                    .1
                             };
                             p = s[j as usize];
                             let k = k as usize;
